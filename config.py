@@ -11,7 +11,7 @@ def create_config(path):
     config.set("Settings", "db_port", "8086")
     config.set("Settings", "db_name", "mydb")
     config.set("Settings", "db_info",
-               "You are using host %(db_host) at port:%(db_port)s with database: %(db_name)")
+               "You are using host %(db_host)s at port:%(db_port)s with database: %(db_name)s")
 
     with open(path, "w") as config_file:
         config.write(config_file)
@@ -29,15 +29,16 @@ def get_config(path):
     return config
 
 
-def get_setting(path, section, setting):
+def get_setting(path, section, setting, msg=0):
     """
     Print out a setting
     """
     config = get_config(path)
     value = config.get(section, setting)
-    msg = "{section} {setting} is {value}".format(
-        section=section, setting=setting, value=value
-    )
+    if msg:
+        msg = "{section} {setting} is {value}".format(
+            section=section, setting=setting, value=value
+        )
 
     print(msg)
     return value
@@ -61,15 +62,3 @@ def delete_setting(path, section, setting):
     config.remove_option(section, setting)
     with open(path, "w") as config_file:
         config.write(config_file)
-
-
-if __name__ == "__main__":
-    path = "settings.ini"
-    db_host = get_setting(path, 'Settings', 'db_host')
-    db_port = get_setting(path, 'Settings', 'db_port')
-    db_name = get_setting(path, 'Settings', 'db_name')
-    db_info = get_setting(path, 'Settings', 'db_info')
-    print(db_info)
-
-    update_setting(path, "Settings", "font_size", "12")
-    delete_setting(path, "Settings", "font_style")

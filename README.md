@@ -1,7 +1,7 @@
-# TableViewResults
-Simple module for generating reports in csv and html, 
+## TableViewResults
+_Simple module for generating reports in csv and html, 
 based on template csv files, consisting InfuxDB requests and other data.
-Converts valid sql requests into db requests, saves results in output csv and html file. 
+Converts valid sql requests into db requests, saves results in output csv and html file._ 
 
 Script accepts 3 String parameters:
 python run.py -h

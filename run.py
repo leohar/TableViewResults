@@ -9,6 +9,7 @@ import argparse
 
 from prettytable import PrettyTable
 from prettytable import DEFAULT
+
 # import fileinput
 # from pandas import read_csv
 # import jq
@@ -144,11 +145,17 @@ def difference(a,b):
 
 if __name__ == "__main__":
 
-    # задаем параметры подключения к базе#
-    db_host = "127.0.0.1"
-    db_port = "8086"
-    db_name = "mydb"
-
+    settings_path = 'settings.ini'
+    # создаем, если нет дефолтный файл настроек, считываем подключение к базе
+    if os.path.exists(settings_path):
+        db_host = config.get_setting(settings_path, 'Settings', 'db_host')
+        db_port = config.get_setting(settings_path, 'Settings', 'db_port')
+        db_name = config.get_setting(settings_path, 'Settings', 'db_name')
+        db_info = config.get_setting(settings_path, 'Settings', 'db_info')
+        print(db_info)
+    else:
+        config.create_config('settings.ini')
+        print(db_info)
     # Раскомментировать ниже, если ничего не передано в коммандной строке
     # - время в формате Unix https://www.epochconverter.com/ либо 'now() - 7d'
     # test_start = '1562668594441'
