@@ -18,7 +18,9 @@ For example:
 template .csv creation tips: 
  * querry should be inserted in cell as is, without escaping
  * there is difference function, it works when minuend is followed by subtrahend with string 'diff' inbetween.
- For ex.: 
+
+For ex.:
+
 Cell 1 | Cell 2 | Cell 3
 ------ | ------ | ------
-50|diff|30     
+50 | diff | 30
