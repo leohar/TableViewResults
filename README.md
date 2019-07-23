@@ -3,7 +3,7 @@ _Simple module for generating reports in .csv and .html,
 based on template csv files, consisting InfuxDB requests and other data.
 Converts valid sql requests into db requests, saves results in output csv and html file._ 
 
-Script accepts 3 String parameters:
+script accepts 3 string parameters:
     
         python run.py -h
 
@@ -15,3 +15,10 @@ For example:
 
     python run.py templates/test.csv 1562668594441 1562672194442
 
+template .csv creation tips: 
+ * querry should be inserted in cell as is, without escaping
+ * there is difference function, it works when minuend is followed by subtrahend with string 'diff' inbetween.
+ For ex.: 
+Cell 1 | Cell 2 | Cell 3
+------ | ------ | ------
+50|diff|30     

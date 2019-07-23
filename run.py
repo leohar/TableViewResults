@@ -1,30 +1,12 @@
 import os
 import config
-import configparser
 import requests
-import json
 import csv
-import sys
 import argparse
-
 from prettytable import PrettyTable
-from prettytable import DEFAULT
-
-# import fileinput
-# from pandas import read_csv
-# import jq
-
-# with open(infile, "w", encoding="utf-8") as file_json:
-#     file_json.write(json_data)
-#     file_json.close()
-#
-# html_data = json2html.convert(json = json_data, clubbing = False)
-# print(html_data)
-#
-# with open(outfile,"w", encoding="utf-8") as html_file:
-#     html_file.write(html_data)
-#     html_file.close()
-#     os.system(outfile)
+# from prettytable import DEFAULT
+# import sys
+# import json
 
 def create_db_connection_string(host, port, name):
     db_connection_str = "http://{}:{}/query?db={}".format(host, port, name)
@@ -58,7 +40,7 @@ def query_db(db_conn, query_list, test_time):
                 else:
                     continue
                 print()
-            elif r.status_code != 200 and q == "ems":
+            elif r.status_code != 200 and q == "diff":
                 print("HTTP CODE: ", r.status_code)
                 # print("before " + difference_needed.__str__())
                 difference_needed = True
@@ -146,6 +128,9 @@ def difference(a,b):
 if __name__ == "__main__":
 
     settings_path = 'settings.ini'
+    db_query_list = []
+    result_list = []
+
     # создаем, если нет дефолтный файл настроек, считываем подключение к базе
     if os.path.exists(settings_path):
         db_host = config.get_setting(settings_path, 'Settings', 'db_host')
@@ -156,17 +141,11 @@ if __name__ == "__main__":
     else:
         config.create_config('settings.ini')
         print(db_info)
+
     # Раскомментировать ниже, если ничего не передано в коммандной строке
     # - время в формате Unix https://www.epochconverter.com/ либо 'now() - 7d'
     # test_start = '1562668594441'
     # test_end = '1562672194442'
-
-    # - пути темплейтов и результирующих файлов
-    # template_path = "templates/test.csv"
-    # results_path = "results/test.csv"
-
-    db_query_list = []
-    result_list = []
 
     # настройки парсера аргументов коммандной строки
     parser = argparse.ArgumentParser(description='Report builder requires parameters listed under for report generation.')
