@@ -1,11 +1,11 @@
 import os
+import sys
+import csv
 import config
 import requests
-import csv
 import argparse
 from prettytable import PrettyTable
 # from prettytable import DEFAULT
-# import sys
 # import json
 
 def create_db_connection_string(host, port, name):
@@ -14,14 +14,10 @@ def create_db_connection_string(host, port, name):
 
 def query_db(db_conn, query_list, test_time):
     print(query_list)
-    print(list(query_list))
     result_list = query_list.copy()
-    difference_needed = False
-    # print(result_list)
     for i in range(len(query_list)):
         for j in range(len(query_list[i])):
-            # print(query_list[i][j], end=' ')
-            # print("dbconn = " + db_conn)
+            print("dbconn = " + str(db_conn))
             q = query_list[i][j]
             query_str = "q={}&{}".format(q, test_time)
             print("query_str = "+ query_str)
@@ -32,20 +28,7 @@ def query_db(db_conn, query_list, test_time):
                 # print(json_data)
                 # print(json_data['results'][0]['series'][0]['values'][0][1])
                 res_int = int(json_data['results'][0]['series'][0]['values'][0][1])  # округляем float до int
-                # print(result_list[i][j])
                 result_list[i][j] = res_int.__str__()
-                if (difference_needed == True):
-                    result_list[i][j - 1] = difference(diff_base, res_int)
-                    difference_needed = False
-                else:
-                    continue
-                print()
-            elif r.status_code != 200 and q == "diff":
-                print("HTTP CODE: ", r.status_code)
-                # print("before " + difference_needed.__str__())
-                difference_needed = True
-                diff_base = res_int
-                # print("after " + difference_needed.__str__())
             else:
                 print("HTTP CODE: ", r.status_code)
                 # raise Exception()
@@ -115,21 +98,32 @@ def html_write(html_data, html_write_path):
     except OSError as e:
         print(e)
 
-def set_date(start, end):
+def prepare_time_string(start, end):
     test_time = "from={}&to{}".format(start, end)
     return test_time
 
-def difference(a,b):
-    try:
-        return a - b
-    except:
-        ArithmeticError
+def difference(results_list):
+    difference_list = results_list.copy()
+    for r in range(len(difference_list)):
+        for l in range(len(difference_list[r])):
+            if difference_list[r][l] == "diff":
+                difference_list[r][l] = int(difference_list[r][l-1]) - int(difference_list[r][l+1])
+            else:
+                continue
+            print("difference list")
+            print(difference_list)
+    return difference_list
+
+def printmylist(result_list):
+    map(print(row), result_list[row])
 
 if __name__ == "__main__":
 
     settings_path = 'settings.ini'
+    db_connection_string = []
     db_query_list = []
     result_list = []
+    calculated_list = []
 
     # создаем, если нет дефолтный файл настроек, считываем подключение к базе
     if os.path.exists(settings_path):
@@ -173,9 +167,11 @@ if __name__ == "__main__":
 
     db_connection_string = create_db_connection_string(db_host, db_port, db_name)
     # print("db_connection_string = " + db_connection_string)
-    test_time = set_date(test_start, test_end)
+    test_time = prepare_time_string(test_start, test_end)
     # print("test_time = " + test_time)
-    csv_read(template_path)
+    db_query_list = csv_read(template_path)
     result_list = query_db(db_connection_string, db_query_list, test_time)
-    csv_write(result_list, template_path)
-    html_write(result_list, template_path)
+    calculated_list = difference(result_list)
+    # print(calculated_list)
+    csv_write(calculated_list, template_path)
+    html_write(calculated_list, template_path)
